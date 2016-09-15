@@ -1,5 +1,5 @@
 { "name": "readme-ssi",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Update your markdown readme's ToC and snippets without seperate template or docs files, according to directives that remind of Server Side Includes.",
   "keywords": [
     "code example",
@@ -36,7 +36,7 @@
   },
 
   "dependencies": {
-    "render-ssi-like-file-pmb": "^0.0.2"
+    "render-ssi-like-file-pmb": "^0.1.0"
   },
 
   "npm vs. BOM = Unexpected token": "-*- coding: UTF-8 -*-"
