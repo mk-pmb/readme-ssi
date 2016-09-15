@@ -13,7 +13,7 @@ EX.wordWrap = ersatzWordWrap;
 EX.defaultReplaceEndMark = /^[ \t]*<\!\-{2}/;
 EX.defaultTocPfx = '### ';
 EX.defaultTocFmt = '  * [&$caption;](#&$npmdash;)';
-EX.tocStopMarkRgx = /^\s*<!--#toc\s+stop="scan"\s+-->/;
+EX.tocStopMarkRgx = /^[ \t]*<!--#toc[ \t]+stop="scan"[ \t]+-->/;
 
 EX.markDown = {
   codeBlockQuotes: '```',
@@ -169,7 +169,7 @@ EX.tocFmt = function (fmt, ln) {
     case 'caption':
       return ln;
     case 'npmdash':
-      return ln.toLowerCase().replace(/\s/g, '-'
+      return ln.toLowerCase().replace(/ /g, '-'
         ).match(/([a-z0-9\-]+)/g).join('');
     }
     throw new Error('unsupporte toc fmt slot name: ' + (match && slot));
@@ -200,7 +200,7 @@ EX.cmd.verbatim = function (text, tag, buf) {
 
 EX.checkEatVerbatimCmd = function (renderer, buf) {
   var text = buf.peekLine(), cmd;
-  if (!text.match(/^\s*<!--#verbatim\s/)) { return false; }
+  if (!text.match(/^[ \t]*<!--#verbatim[\s\n]/)) { return false; }
   cmd = renderer.tokenizeMaybeTag(buf);
   if (!cmd) { return false; }
   if (cmd.cmdName !== 'verbatim') { return false; }
@@ -215,7 +215,7 @@ EX.checkEatVerbatimCmd = function (renderer, buf) {
 EX.cmd.include = function (text, tag, buf) {
   if (text) { tag.err('unexpected input text'); }
   var renderer = this, endMark, opts;
-  opts = tag.popAttr(['code', 'file', 'start', 'end', 'maxln',
+  opts = tag.popAttr(['code', 'file', 'start', 'stop', 'maxln',
     'indent', 'outdent']);
 
   if (EX.checkEatVerbatimCmd(renderer, buf)) { endMark = true; }
@@ -242,7 +242,7 @@ EX.cmd.include = function (text, tag, buf) {
 EX.includeGeneric = function (opts, tag, deliver, readErr, text) {
   if (readErr) { return deliver(readErr); }
   var maxLnCnt = +opts.maxln;
-  text = String(text).split(/\s*\n/);
+  text = String(text).split(/[ \t\r]*\n/);
   if (opts.start !== undefined) {
     text.start = text.indexOf(opts.start);
     if (text.start < 0) {
