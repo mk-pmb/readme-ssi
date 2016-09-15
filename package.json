@@ -1,0 +1,43 @@
+{ "name": "readme-ssi",
+  "version": "0.1.0",
+  "description": "Update your markdown readme's ToC and snippets without seperate template or docs files, according to directives that remind of Server Side Includes.",
+  "keywords": [
+    "code example",
+    "code examples",
+    "doc",
+    "include",
+    "readme",
+    "snippet",
+    "snippets",
+    "SSI", "ssi", "server side includes",
+    "table of contents",
+    "TOC", "toc",
+    "update"
+  ],
+
+  "author": "M.K. (https://github.com/mk-pmb)",
+  "homepage": "https://github.com/mk-pmb/readme-ssi#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mk-pmb/readme-ssi.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mk-pmb/readme-ssi/issues"
+  },
+
+  "private": false, "license": "ISC",
+
+  "bin": { "readme-ssi-update": "readme-ssi.js" },
+  "main": { "test": "readme-ssi.js" },
+  "scripts": { "test": "bash test/test_all.sh" },
+  "directories": {
+    "doc": "doc",
+    "test": "test"
+  },
+
+  "dependencies": {
+    "render-ssi-like-file-pmb": "^0.0.2"
+  },
+
+  "npm vs. BOM = Unexpected token": "-*- coding: UTF-8 -*-"
+}
