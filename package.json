@@ -1,5 +1,5 @@
 { "name": "readme-ssi",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Update your markdown readme's ToC and snippets without seperate template or docs files, according to directives that remind of Server Side Includes.",
   "keywords": [
     "code example",

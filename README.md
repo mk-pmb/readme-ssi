@@ -97,7 +97,31 @@ Options:
     Listing multiple levels of headlines isn't supoorted yet.
     Default: <code>###&nbsp;</code>
   * `fmt`: The format of the generated ToC lines.
-    Default: <code>&nbsp; * &#x5B;&amp;$caption;]&#x28;#&amp;$npmdash;)</code>
+    Default: <code>&nbsp; * &#x5B;&amp;$caption;]&#x28;#&amp;$anchor;)</code>
+  * `cap-start`, `cap-end`: Boundary markers for the caption part of your
+    headline source line, in case it contains additional decoration like
+    status symbols or version number hints.
+    * Defaults:
+      If `cap-start` is empty or unset, the caption starts right after `pfx`.
+      If `cap-end` is empty or unset, the caption ends at the end of its
+      source line.
+    * The trimming on both sides is greedy.
+      `cap-start` goes first, then `cap-end`.
+    * Whitespace might be trimmed or not, don't rely on it.
+    * You can provide multiple alternative texts for each boundary by
+      separating them with the `&#0;` CharRef.
+      Greedy trimming will select the most hoggish alternative.
+      A literal NUL (U+0000) might work as well, but don't rely on it.
+  * `anchor`: Template for what this ToC's anchor names shall look like.
+    Any `#` is replaced with an ID generated from the caption part of the
+    headline.
+    * Helps avoid conflicts when you have multiple ToCs.
+    * __Why custom anchors?__
+      Trying to guess the auto-generated anchor names produced by various
+      markdown parsers turned out to be too unreliable, as their rules for
+      converting links, non-american letters and XML CharRefs might change
+      at any time.
+    * Default: `toc-#`
 
 Work-arounds:
   * After the ToC lines, a blank line will be added in order to help Github
