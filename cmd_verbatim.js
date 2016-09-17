@@ -29,7 +29,7 @@ EX.cmd.verbatim = function (text, tag, buf) {
 
 EX.checkEat = function (renderer, buf) {
   var text = buf.peekLine(), cmd;
-  if (!text.match(/^[ \t]*<!--#verbatim[\s\n]/)) { return false; }
+  if (!text.match(/^[ \t]*<!--#verbatim\s/)) { return false; }
   cmd = renderer.tokenizeMaybeTag(buf);
   if (!cmd) { return false; }
   if (cmd.cmdName !== 'verbatim') { return false; }
