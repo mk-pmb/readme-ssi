@@ -33,6 +33,9 @@ EX.fromFile = function (srcFn, deliver) {
   readme.normalizeWhitespace = true;
   readme.filename = srcFn;
   readme.commands = EX.cmd;
+  if (+process.env.DEBUGLEVEL > 2) {
+    readme.log = console.error.bind(console);
+  }
   return readme.render(deliver);
 };
 

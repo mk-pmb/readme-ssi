@@ -5,8 +5,8 @@ readme-ssi
 <!--/#echo -->
 
 <!--#echo json="package.json" key="description" -->
-Update your markdown readme's ToC and snippets without seperate template or
-docs files, according to directives that remind of Server Side Includes.
+Update your markdown readme&#39;s ToC and snippets without seperate template
+or docs files, according to directives that remind of Server Side Includes.
 <!--/#echo -->
 
 
@@ -15,8 +15,8 @@ Commands
 <!--#toc -->
   * [verbatim until](#toc-verbatim-until)
   * [verbatim lncnt](#toc-verbatim-lncnt)
-  * [echo json](#toc-echo-json)
   * [toc](#toc-toc)
+  * [echo json](#toc-echo-json)
   * [include file](#toc-include-file)
 
 <!--/#toc -->
@@ -63,21 +63,6 @@ XML entities:
 Where `lncnt` is a non-negative integer. The next `lncnt` lines won't have
 any special effect, even if they might look like an SSI command or a headline
 that `toc` would otherwise list.
-
-
-<a class="readme-ssi-toc-target" id="toc-echo-json" name="toc-echo-json"></a>
-### echo json
-Replace text with a value from a JSON file. Options:
-  * `json`: Data source filename, relative to the readme. Required.
-  * `key`: The path to the property that shall be used.
-    Empty = root object of the JSON source file.
-    If the first character of the path is one of `A-Z`, `a-z`, `0-9`, `_`,
-    the path component seperator will be `.`, otherwise the first character
-    will be used.
-  * `wrap`: Try to wrap lines to this number of characters. Default: 78
-  * `before`, `after`: Text that shall be inserted before or after the
-    retrieved value. This is done before line wrapping. You can use it
-    to add quotes or indentation.
 
 
 <a class="readme-ssi-toc-target" id="toc-toc" name="toc-toc"></a>
@@ -130,6 +115,32 @@ Options:
 Work-arounds:
   * After the ToC lines, a blank line will be added in order to help Github
     detect that the list ends, and treat the subsequent comment as a comment.
+
+
+<a class="readme-ssi-toc-target" id="toc-echo-json" name="toc-echo-json"></a>
+### echo json
+Replace text with a value from a JSON file. Options:
+  * `json`: Data source filename, relative to the readme. Required.
+  * `key`: The path to the property that shall be used.
+    Empty = root object of the JSON source file.
+    If the first character of the path is one of `A-Z`, `a-z`, `0-9`, `_`,
+    the path component seperator will be `.`, otherwise the first character
+    will be used.
+  * `wrap`: Try to wrap lines to this number of characters. Default: 78
+  * `before`, `after`: Text that shall be inserted before or after the
+    retrieved value. This is done before line wrapping. You can use it
+    to add quotes or indentation.
+  * `cut-head`, `cut-tail`: Marks for where to chop off decorations from the
+    value. They work like `cap-start` and `cap-end` for `toc` (see above),
+    with these convenience exceptions:
+    * With `json="package.json"` and `key="description"`,
+      `cut-tail` defaults to <code>&nbsp;[npm search keywords:&nbsp;</code>.
+  * `raw`: If present without a value or set to `1`,
+    the data is included as found in the source.
+    If unset or empty or set to `0`,
+    [some characters are encoded as XML entities][xmlunidefuse],
+    most importantly including `<`, `&`, `>`.
+    All other values are reserved for future use.
 
 
 <a class="readme-ssi-toc-target" id="toc-include-file" name="toc-include-file"></a>
@@ -186,6 +197,10 @@ Caveats
   * Data included from external sources might be exempt from some of the
     whitespace normalization rules. Don't rely on it.
 
+
+
+
+  [xmlunidefuse]: https://github.com/mk-pmb/xmlunidefuse-js
 
 
 License

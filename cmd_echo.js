@@ -3,7 +3,9 @@
 'use strict';
 
 var EX = module.exports, allCmd = require('./all_cmd.js'),
-  wordWrap = require('./ersatz_wordwrap.js');
+  wordWrap = require('./ersatz_wordwrap.js'),
+  xmldefuse = require('xmlunidefuse'),
+  kisi = require('./kitchen_sink.js');
 
 EX.cmd = {};
 
@@ -13,12 +15,20 @@ EX.cmd.echo = function (text, tag, buf) {
   var renderer = this, srcFn, opts = {
     before: tag.popAttr('before', ''),
     after:  tag.popAttr('after', ''),
+    raw:    +tag.popAttr('raw'),
     wrap:   (+tag.popAttr('wrap') || 78),
     underline:  tag.popAttr('underline', ''),
+    cutHead:    tag.popAttr('cut-head'),
+    cutTail:    tag.popAttr('cut-tail'),
   };
   srcFn = tag.popAttr('json');
   if (srcFn) {
-    opts.diveDataObj = tag.popAttr('key');
+    opts.diveDataObj = tag.popAttr('key', '');
+    switch (srcFn + '$' + opts.diveDataObj) {
+    case 'package.json$description':
+      kisi.defaultProp(opts, 'cutTail', ' [npm search keywords: ');
+      break;
+    }
     return function ssiEchoJsonFetcher(deliver) {
       renderer.readFileRel(srcFn, 'json',
         EX.echoGeneric.bind(renderer, opts, deliver));
@@ -42,6 +52,9 @@ EX.echoGeneric = function (opts, deliver, readErr, data) {
   default:
     data = JSON.stringify(data, null, 2);
   }
+  data = kisi.multiMarkSplit(data, opts.cutHead, -1);
+  data = kisi.multiMarkSplit(data, opts.cutTail, 0);
+  if (!opts.raw) { data = xmldefuse(data); }
   data = (opts.before || '') + data + (opts.after || '');
   if (opts.wrap) { data = wordWrap(data, opts.wrap); }
   if (data && opts.underline) {

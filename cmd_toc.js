@@ -3,7 +3,8 @@
 'use strict';
 
 var EX = module.exports, allCmd = require('./all_cmd.js'),
-  cmdVerbatim = require('./cmd_verbatim.js');
+  cmdVerbatim = require('./cmd_verbatim.js'),
+  kisi = require('./kitchen_sink.js');
 
 EX.defaultTocPfx = '### ';
 EX.defaultTocFmt = '  * [&$caption;](#&$anchor;)';
@@ -71,23 +72,13 @@ EX.tocGen = function (tag, buf, renderer, headlines) {
 };
 
 
-EX.multiMarkSplit = function (text, mark, idx) {
-  if (!mark) { return text; }
-  text = text.split(new RegExp(String(mark).replace(/(\W)/g, '\\$1'
-    ).replace(/\\\x00/g, '|'), ''));
-  if (idx === undefined) { return text; }
-  if (idx < 0) { idx += text.length; }
-  return text[idx];
-};
-
-
 EX.tocFindCaption = function (ln, opts) {
   if (!ln.startsWith(opts.pfx)) { return; }
   ln = ln.slice(opts.pfx.length);
   if (!ln) { return; }
   ln = ln.replace(EX.markDownLinksRgx, '$1');
-  ln = EX.multiMarkSplit(ln, opts.captionStart, -1);
-  ln = EX.multiMarkSplit(ln, opts.captionEnd, 0);
+  ln = kisi.multiMarkSplit(ln, opts.captionStart, -1);
+  ln = kisi.multiMarkSplit(ln, opts.captionEnd, 0);
   return ln;
 };
 
