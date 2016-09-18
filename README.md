@@ -13,11 +13,11 @@ docs files, according to directives that remind of Server Side Includes.
 Commands
 --------
 <!--#toc -->
-  * [verbatim until](#verbatim-until)
-  * [verbatim lncnt](#verbatim-lncnt)
-  * [echo json](#echo-json)
-  * [toc](#toc)
-  * [include file](#include-file)
+  * [verbatim until](#toc-verbatim-until)
+  * [verbatim lncnt](#toc-verbatim-lncnt)
+  * [echo json](#toc-echo-json)
+  * [toc](#toc-toc)
+  * [include file](#toc-include-file)
 
 <!--/#toc -->
 
@@ -45,6 +45,7 @@ When commands replace text, they usually do that up to the next line that
     with the name of the command whose replacing is stopped.
 
 
+<a class="readme-ssi-toc-target" id="toc-verbatim-until" name="toc-verbatim-until"></a>
 ### verbatim until
 Starting from the next line, text that looks like an SSI command will have
 no effect, the line will be printed verbatim. This effect is revoked,
@@ -57,12 +58,14 @@ XML entities:
   * `&,`: a line consisting of 3 accents grave.
 
 
+<a class="readme-ssi-toc-target" id="toc-verbatim-lncnt" name="toc-verbatim-lncnt"></a>
 ### verbatim lncnt
 Where `lncnt` is a non-negative integer. The next `lncnt` lines won't have
 any special effect, even if they might look like an SSI command or a headline
 that `toc` would otherwise list.
 
 
+<a class="readme-ssi-toc-target" id="toc-echo-json" name="toc-echo-json"></a>
 ### echo json
 Replace text with a value from a JSON file. Options:
   * `json`: Data source filename, relative to the readme. Required.
@@ -77,6 +80,7 @@ Replace text with a value from a JSON file. Options:
     to add quotes or indentation.
 
 
+<a class="readme-ssi-toc-target" id="toc-toc" name="toc-toc"></a>
 ### toc
 Replace text with a generated table of contents.
 It will include all lines that start with the headline prefix,
@@ -128,6 +132,7 @@ Work-arounds:
     detect that the list ends, and treat the subsequent comment as a comment.
 
 
+<a class="readme-ssi-toc-target" id="toc-include-file" name="toc-include-file"></a>
 ### include file
 Replace text with lines from another file.
 If the very next line after the `include` command is a `verbatim` command,
