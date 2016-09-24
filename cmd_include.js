@@ -4,7 +4,8 @@
 
 var EX = module.exports, allCmd = require('./all_cmd.js'),
   codeQuot = allCmd.markDown.codeBlockQuotes,
-  cmdVerbatim = require('./cmd_verbatim.js');
+  cmdVerbatim = require('./cmd_verbatim.js'),
+  kisi = require('./kitchen_sink.js');
 
 EX.cmd = {};
 
@@ -12,7 +13,7 @@ EX.cmd.include = function (text, tag, buf) {
   if (text) { throw tag.err('unexpected input text'); }
   var renderer = this, endMark, opts;
   opts = tag.popAttr(['code', 'file', 'start', 'stop', 'maxln',
-    'indent', 'outdent']);
+    'indent', 'outdent', 'cut-head', 'cut-tail']);
 
   if (cmdVerbatim.checkEat(renderer, buf)) { endMark = true; }
   if (!endMark) {
@@ -26,7 +27,7 @@ EX.cmd.include = function (text, tag, buf) {
   }
 
   if (opts.file) {
-    return function ssiEchoJsonFetcher(deliver) {
+    return function ssiIncludeFileFetcher(deliver) {
       renderer.readFileRel(opts.file,
         EX.includeGeneric.bind(renderer, opts, tag, deliver));
     };
@@ -38,7 +39,9 @@ EX.cmd.include = function (text, tag, buf) {
 EX.includeGeneric = function (opts, tag, deliver, readErr, text) {
   if (readErr) { return deliver(readErr); }
   var maxLnCnt = +opts.maxln;
-  text = String(text).split(/[ \t\r]*\n/);
+  text = String(text);
+  if (text[0] === '\uFEFF') { text = text.slice(1); }
+  text = text.split(/[ \t\r]*\n/);
   if (opts.start !== undefined) {
     text.start = text.indexOf(opts.start);
     if (text.start < 0) {
@@ -54,9 +57,12 @@ EX.includeGeneric = function (opts, tag, deliver, readErr, text) {
     text = text.slice(0, text.stop);
   }
   if (maxLnCnt && (maxLnCnt < text.length)) { text = text.slice(0, maxLnCnt); }
-  if (opts.outdent || opts.indent) {
+  if (opts.outdent || opts.indent || opts['cut-head'] || opts['cut-tail']) {
     text = text.map(EX.redentOneLine.bind(null,
-      opts.outdent, (opts.indent || '')));
+      opts.outdent,
+      opts['cut-head'],
+      opts['cut-tail'],
+      (opts.indent || '')));
   }
   if (opts.code !== undefined) {
     text.unshift(codeQuot + (opts.code || 'text'));
@@ -67,8 +73,10 @@ EX.includeGeneric = function (opts, tag, deliver, readErr, text) {
 };
 
 
-EX.redentOneLine = function (outdent, indent, ln) {
+EX.redentOneLine = function (outdent, cutHead, cutTail, indent, ln) {
   if (outdent && ln.startsWith(outdent)) { ln = ln.slice(outdent.length); }
+  ln = kisi.multiMarkSplit(ln, cutHead, -1);
+  ln = kisi.multiMarkSplit(ln, cutTail, 0);
   return (indent + ln);
 };
 

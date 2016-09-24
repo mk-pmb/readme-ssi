@@ -167,11 +167,17 @@ Options:
     * The generated code block will be preceeded by a generated
       `verbatim until="&,"` command in order to have the `toc`
       command ignore it.
+  * `outdent`: If a line copied from the source file starts with this text,
+    remove the `outdent` text. At most one occurrence is removed.
+  * `cut-head`, `cut-tail`: Chop marks, same as with `echo json`.
   * `indent`: This text will be prepended to any line that is copied from the
     source file.
-  * `outdent`: If a line copied from the source file starts with this text,
-    remove the `outdent` text. At most one occurrence is removed, and it is
-    done before the `indent` option is applied.
+
+Order of removal and decoration operations:
+  1. `outdent`
+  2. `cut-head`
+  3. `cut-tail`
+  4. `indent`
 
 
 
