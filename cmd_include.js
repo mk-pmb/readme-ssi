@@ -41,7 +41,7 @@ EX.includeGeneric = function (opts, tag, deliver, readErr, text) {
   var maxLnCnt = +opts.maxln;
   text = String(text);
   if (text[0] === '\uFEFF') { text = text.slice(1); }
-  text = text.split(/[ \t\r]*\n/);
+  text = text.replace(/\s+$/, '').split(/[ \t\r]*\n/);
   if (opts.start !== undefined) {
     text.start = text.indexOf(opts.start);
     if (text.start < 0) {
