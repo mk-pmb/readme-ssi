@@ -4,6 +4,7 @@
 
 var EX = module.exports, allCmd = require('./all_cmd.js'),
   wordWrap = require('./ersatz_wordwrap.js'),
+  objdive = require('objdive'),
   xmldefuse = require('xmlunidefuse'),
   kisi = require('./kitchen_sink.js');
 
@@ -40,12 +41,7 @@ EX.cmd.echo = function (text, tag, buf) {
 
 EX.echoGeneric = function (opts, deliver, readErr, data) {
   if (readErr) { return deliver(readErr); }
-  var divePath = opts.diveDataObj;
-  if (divePath) {
-    divePath = (divePath.match(/^[A-Za-z0-9_]/) ? divePath.split(/\./)
-      : divePath.slice(1).split(divePath[0]));
-    divePath.forEach(function (key) { data = (data || false)[key]; });
-  }
+  data = objdive(data, opts.diveDataObj);
   switch (data && typeof data) {
   case 'string':
     break;
