@@ -7,7 +7,12 @@ var EX = module.exports, allCmd = require('./all_cmd.js'),
   cmdVerbatim = require('./cmd_verbatim.js'),
   kisi = require('./kitchen_sink.js');
 
+function ifFun(x, d) { return ((typeof x) === 'function' ? x : d); }
+
 EX.cmd = {};
+EX.transforms = {
+  mjsUsageDemo1802: require('./transforms/mjsUsageDemo1802'),
+};
 
 EX.cmd.include = function (text, tag, buf) {
   if (text) { throw tag.err('unexpected input text'); }
@@ -68,8 +73,31 @@ EX.includeGeneric = function (opts, tag, deliver, readErr, text) {
     text.unshift(codeQuot + (opts.code || 'text'));
     text.push(codeQuot);
   }
+  text = EX.applyTransforms(tag, text);
+  if (text.err) { return deliver(text.err); }
   text.unshift('<!--#verbatim lncnt="' + text.length + '" -->');
   return deliver(null, text.concat('').join('\n'));
+};
+
+
+EX.applyTransforms = function (tag, text) {
+  var trNames = tag.popAttr('transform', '').split(/\s+/);
+  if (!trNames) { return text; }
+  try {
+    trNames.forEach(function (trName) {
+      var tf = EX.transforms[trName];
+      if (!tf) { return; }
+      if (!ifFun(tf)) { throw new Error('unsupported transform: ' + trName); }
+      text = tf(text, tag);
+      if ((!text) && (text !== '')) {
+        throw new Error('bad data after transform: ' + trName + ': ' + text);
+      }
+      if (text.split) { text = text.split(/\n/); }
+    });
+  } catch (transErr) {
+    text = { err: transErr };
+  }
+  return text;
 };
 
 
