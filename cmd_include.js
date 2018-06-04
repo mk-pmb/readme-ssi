@@ -5,9 +5,11 @@
 var EX = module.exports, allCmd = require('./all_cmd.js'),
   codeQuot = allCmd.markDown.codeBlockQuotes,
   cmdVerbatim = require('./cmd_verbatim.js'),
+  Promise = require('bluebird'),
   kisi = require('./kitchen_sink.js');
 
 function ifFun(x, d) { return ((typeof x) === 'function' ? x : d); }
+function opporSplit(x, s) { return (x && ifFun(x.split) ? x.split(s) : x); }
 
 EX.cmd = {};
 EX.transforms = {
@@ -18,7 +20,7 @@ EX.cmd.include = function (text, tag, buf) {
   if (text) { throw tag.err('unexpected input text'); }
   var renderer = this, endMark, opts;
   opts = tag.popAttr(['code', 'file', 'start', 'stop', 'maxln',
-    'indent', 'outdent', 'cut-head', 'cut-tail']);
+    'indent', 'outdent', 'cut-head', 'cut-tail', 'transform']);
 
   if (cmdVerbatim.checkEat(renderer, buf)) { endMark = true; }
   if (!endMark) {
@@ -69,35 +71,43 @@ EX.includeGeneric = function (opts, tag, deliver, readErr, text) {
       opts['cut-tail'],
       (opts.indent || '')));
   }
-  if (opts.code !== undefined) {
-    text.unshift(codeQuot + (opts.code || 'text'));
-    text.push(codeQuot);
-  }
-  text = EX.applyTransforms(tag, text);
   if (text.err) { return deliver(text.err); }
-  text.unshift('<!--#verbatim lncnt="' + text.length + '" -->');
-  return deliver(null, text.concat('').join('\n'));
+
+  Promise.try(function applyTransforms() {
+    return EX.applyTransforms(opts.transform, text, {
+      opts: opts,
+      tag: tag,
+    });
+  }).then(function transformed(lines) {
+    var verbatim = lines.length, before = [verbatim], after = [];
+    if (opts.code !== undefined) {
+      before.push(codeQuot + (opts.code || 'text'));
+      after.push(codeQuot);
+      verbatim += 2;
+    }
+    before[0] = '<!--#verbatim lncnt="' + verbatim + '" -->';
+    deliver(null, before.concat(lines, after, '').join('\n'));
+  }).then(null, deliver);
 };
 
 
-EX.applyTransforms = function (tag, text) {
-  var trNames = tag.popAttr('transform', '').split(/\s+/);
-  if (!trNames) { return text; }
-  try {
-    trNames.forEach(function (trName) {
-      var tf = EX.transforms[trName];
-      if (!tf) { return; }
-      if (!ifFun(tf)) { throw new Error('unsupported transform: ' + trName); }
-      text = tf(text, tag);
-      if ((!text) && (text !== '')) {
-        throw new Error('bad data after transform: ' + trName + ': ' + text);
+EX.applyTransforms = function (trNames, origLines, meta) {
+  if (!trNames) { return origLines; }
+  function applyOne(lines, trName) {
+    if (!trName) { return lines; }
+    return Promise.try(function () {
+      var how = EX.transforms[trName];
+      if (!ifFun(how)) { throw new Error('unsupported transform: ' + trName); }
+      return how(lines, meta);
+    }).then(function (trLn) {
+      trLn = opporSplit(trLn, /\n/);
+      if (!trLn) {
+        throw new Error('bad data after transform: ' + trName + ': ' + trLn);
       }
-      if (text.split) { text = text.split(/\n/); }
+      return trLn;
     });
-  } catch (transErr) {
-    text = { err: transErr };
   }
-  return text;
+  return Promise.reduce(opporSplit(trNames, /\s+/), applyOne, origLines);
 };
 
 
