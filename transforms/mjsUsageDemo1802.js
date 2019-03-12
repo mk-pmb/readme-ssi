@@ -66,7 +66,6 @@ EX.ctrl.importPkgName = function (st) {
   if (!upPath) {
     throw new Error('Expected a relative path but found: ' + after);
   }
-  console.warn([before, upPath, after]);
   before = from.slice(0, -2).join('');
   after = from[from.length - 1];
   return unresolve(upPath, { srcFile: st.srcFn }).then(function (id) {
