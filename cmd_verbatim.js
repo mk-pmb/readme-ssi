@@ -2,7 +2,7 @@
 /* -*- tab-width: 2 -*- */
 'use strict';
 
-var EX = module.exports, allCmd = require('./all_cmd.js');
+var EX = module.exports, coreCmds = require('./core_cmds.js');
 
 EX.cmd = {};
 
@@ -18,10 +18,10 @@ EX.cmd.verbatim = function (text, tag, buf) {
   until = tag.popReqAttr('until');
   if (until[0] === '&') {
     until = ({
-      '&,': allCmd.markDown.codeBlockQuotes,
+      '&,': coreCmds.markDown.codeBlockQuotes,
     }[tag.rawAttrs.until] || until);
   }
-  text = tag.try(allCmd.replaceUntilMark, [buf]);
+  text = tag.try(coreCmds.replaceUntilMark, [buf]);
   text += buf.eatLine();
   return text;
 };

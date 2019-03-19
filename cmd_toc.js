@@ -2,7 +2,7 @@
 /* -*- tab-width: 2 -*- */
 'use strict';
 
-var EX = module.exports, allCmd = require('./all_cmd.js'),
+var EX = module.exports, coreCmds = require('./core_cmds.js'),
   cmdVerbatim = require('./cmd_verbatim.js'),
   kisi = require('./kitchen_sink.js');
 
@@ -25,7 +25,7 @@ EX.cmd.toc = function (text, tag, buf) {
   default:
     throw tag.err('unsupported stop mode: ' + stop);
   }
-  tag.try(allCmd.replaceUntilMark, [buf]);
+  tag.try(coreCmds.replaceUntilMark, [buf]);
   tag.tocText = EX.tocGen(tag, buf, renderer, headlines);
   EX.tocAddAnchorTargets(tag, buf, headlines);
   return tag.tocText;

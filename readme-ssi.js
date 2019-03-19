@@ -3,14 +3,9 @@
 'use strict';
 
 
-var EX = module.exports, SsiLikeFile = require('render-ssi-like-file-pmb');
+var EX = {}, SsiLikeFile = require('render-ssi-like-file-pmb');
 
-EX.cmd = [ require('./all_cmd.js'),
-  require('./cmd_echo.js'),
-  require('./cmd_include.js'),
-  require('./cmd_toc.js'),
-  require('./cmd_verbatim.js'),
-  ].reduce(function (cmds, mod) { return Object.assign(cmds, mod.cmd); }, {});
+EX.cmd = require('./all_cmd.js');
 
 
 EX.fromFile = function (srcFn, deliver) {
@@ -59,5 +54,5 @@ EX.saveIfRendered = function (readme, whenSaved, renderErr) {
 
 
 
-
+module.exports = EX;
 if (require.main === module) { EX.fromFile('README.md', process); }

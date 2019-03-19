@@ -2,8 +2,8 @@
 /* -*- tab-width: 2 -*- */
 'use strict';
 
-var EX = module.exports, allCmd = require('./all_cmd.js'),
-  codeQuot = allCmd.markDown.codeBlockQuotes,
+var EX = module.exports, coreCmds = require('./core_cmds.js'),
+  codeQuot = coreCmds.markDown.codeBlockQuotes,
   cmdVerbatim = require('./cmd_verbatim.js'),
   Promise = require('bluebird'),
   kisi = require('./kitchen_sink.js');
@@ -24,9 +24,9 @@ EX.cmd.include = function (text, tag, buf) {
 
   if (cmdVerbatim.checkEat(renderer, buf)) { endMark = true; }
   if (!endMark) {
-    endMark = (opts.code === undefined ? allCmd.defaultReplaceEndMark
+    endMark = (opts.code === undefined ? coreCmds.defaultReplaceEndMark
       : codeQuot);
-    tag.try(allCmd.replaceUntilMark, [buf]);
+    tag.try(coreCmds.replaceUntilMark, [buf]);
     if (opts.code !== undefined) {
       opts.code = (opts.code || 'text');
       if (buf.peekLine() === codeQuot + '\n') { buf.eat(); }
