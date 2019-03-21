@@ -2,13 +2,15 @@
 /* -*- tab-width: 2 -*- */
 'use strict';
 
-var core = require('./core_cmds.js'), extra, all = Object.assign({}, core);
-extra = [
+var core = require('./core_cmds.js'), allCmds = {}, cmdMods;
+cmdMods = [
+  core,
   require('./cmd_echo.js'),
   require('./cmd_include.js'),
+  require('./cmd_sync_icons.js'),
   require('./cmd_toc.js'),
   require('./cmd_verbatim.js'),
 ];
-extra.forEach(function add(mod) { Object.assign(all, mod.cmd); });
+cmdMods.forEach(function add(mod) { Object.assign(allCmds, mod.cmd); });
 
-module.exports = all;
+module.exports = allCmds;

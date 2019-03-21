@@ -2,43 +2,36 @@
 /* -*- tab-width: 2 -*- */
 'use strict';
 
-
 var EX = {}, SsiLikeFile = require('render-ssi-like-file-pmb');
 
 EX.cmd = require('./all_cmd.js');
 
 
 EX.fromFile = function (srcFn, deliver) {
-  var readme = new SsiLikeFile();
-  if (deliver === process) {
-    (function parseArgs(args) {
-      srcFn = (args.shift() || srcFn);
-      readme.saveAsFilename = (args.shift() || srcFn);
-    }(process.argv.slice(2)));
-    readme.rendered = false;
-    process.on('exit', function verifyReadmeWasRendered(retval) {
-      if (retval !== 0) { return; }
-      if (!readme.rendered) { throw new Error('failed to render readme'); }
-    });
-    deliver = EX.saveIfRendered.bind(null, readme, function (err) {
-      readme.rendered = true;
-      if (err) { throw err; }
-    });
-  }
+  EX.fromFileToFile(srcFn, false, deliver);
+};
+
+
+EX.fromFileToFile = function (srcFn, saveAs, whenSaved) {
+  var readme = new SsiLikeFile(), whenRendered = whenSaved;
   readme.normalizeWhitespace = true;
   readme.filename = srcFn;
   readme.commands = EX.cmd;
+  readme.postFx = [];
+  readme.lateFx = [];
   if (+process.env.DEBUGLEVEL > 2) {
     readme.log = console.error.bind(console);
   }
-  return readme.render(deliver);
+  if (saveAs) {
+    whenRendered = function saveIfRendered(renderErr) {
+      if (renderErr) { return whenSaved(renderErr, readme); }
+      return readme.saveToFile(saveAs, whenSaved);
+    };
+  }
+  readme.render(whenRendered);
 };
 
 
-EX.saveIfRendered = function (readme, whenSaved, renderErr) {
-  if (renderErr) { return whenSaved(renderErr, readme); }
-  return readme.saveToFile(readme.saveAsFilename, whenSaved);
-};
 
 
 
@@ -55,4 +48,3 @@ EX.saveIfRendered = function (readme, whenSaved, renderErr) {
 
 
 module.exports = EX;
-if (require.main === module) { EX.fromFile('README.md', process); }

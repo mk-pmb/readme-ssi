@@ -24,9 +24,8 @@ EX.cmd.include = function (text, tag, buf) {
 
   if (cmdVerbatim.checkEat(renderer, buf)) { endMark = true; }
   if (!endMark) {
-    endMark = (opts.code === undefined ? coreCmds.defaultReplaceEndMark
-      : codeQuot);
-    tag.try(coreCmds.replaceUntilMark, [buf]);
+    endMark = (opts.code === undefined ? undefined : codeQuot);
+    tag.try(coreCmds.replaceUntilMark, [buf, endMark]);
     if (opts.code !== undefined) {
       opts.code = (opts.code || 'text');
       if (buf.peekLine() === codeQuot + '\n') { buf.eat(); }
