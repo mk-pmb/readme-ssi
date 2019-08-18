@@ -10,10 +10,12 @@ var EX = module.exports, coreCmds = require('./core_cmds.js'),
 
 function ifFun(x, d) { return ((typeof x) === 'function' ? x : d); }
 function opporSplit(x, s) { return (x && ifFun(x.split) ? x.split(s) : x); }
+function trimRight(s) { return s.replace(/\s+$/, ''); }
 
 EX.cmd = {};
 EX.transforms = {
   mjsUsageDemo1802: require('./transforms/mjsUsageDemo1802'),
+  trimR: function (lines) { return lines.map(trimRight); },
 };
 
 EX.cmd.include = function (text, tag, buf) {
