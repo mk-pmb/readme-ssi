@@ -1,5 +1,5 @@
 { "name": "readme-ssi",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "description": "Update your markdown readme's ToC and snippets without seperate template or docs files, according to directives that remind of Server Side Includes. [npm search keywords: code examples, documentation, table of contents]",
   "keywords": [
     "code example",
@@ -37,10 +37,10 @@
   },
 
   "dependencies": {
-    "bluebird": "^3.5.3",
-    "objdive": "^0.1.2",
+    "bluebird": "^3.7.2",
+    "objdive": "^0.1.4",
     "render-ssi-like-file-pmb": "^0.1.10",
-    "unresolve": "^1.0.2",
+    "unresolve": "^1.0.3",
     "xmlunidefuse": "^0.1.4"
   },
 

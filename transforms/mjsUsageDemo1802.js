@@ -57,8 +57,8 @@ EX.ctrl = {
 EX.ctrl.importPkgName = function (st) {
   var output = st.output, lastLnIdx = output.length - 1,
     origLn = output[lastLnIdx],
-    from = origLn.split(/( from )(['"])((?:\.+(?:\/|(?=['"])))*)/),
-    before, after, upPath;
+    from = origLn.split(/( from )('|")((?:\.+(?:\/|(?='|")))*)/),
+    before, file, after, upPath;
   if (from.length !== 5) {
     throw new Error('Expected exactly one "from" in ' + origLn);
   }
@@ -67,8 +67,13 @@ EX.ctrl.importPkgName = function (st) {
     throw new Error('Expected a relative path but found: ' + after);
   }
   before = from.slice(0, -2).join('');
-  after = from[from.length - 1];
-  return unresolve(upPath, { srcFile: st.srcFn }).then(function (id) {
+  after = from[from.length - 1].split(/(?='|")/);
+  file = upPath + after[0];
+  after = after.slice(1).join('');
+  return unresolve(file, {
+    srcFile: st.srcFn,
+    unmain: true,
+  }).then(function (id) {
     output[lastLnIdx] = before + id + after;
   });
 };
